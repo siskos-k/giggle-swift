@@ -23,7 +23,13 @@ struct LoginView: View {
                     HeaderView()
                         .offset(y: -40)
                     
+                    
+                  
                     Form {
+                        if !loginVM.errormessage.isEmpty {
+                            Text(loginVM.errormessage)
+                                .foregroundColor(Color.red)
+                        }
                         TextField("Email Address", text: $loginVM.email)
                             .autocorrectionDisabled(true)
                             .autocapitalization(.none)
@@ -32,7 +38,7 @@ struct LoginView: View {
                             .autocapitalization(.none)
                         
                         Button(action: {
-                            // Add login action
+                            loginVM.login()
                         }) {
                             Text("Log In")
                                 .bold()
