@@ -1,0 +1,61 @@
+//
+//  LoginView.swift
+//  Giggle
+//
+//  Created by Konstantinos Siskos on 21/12/24.
+//
+
+import SwiftUI
+
+struct LoginView: View {
+    
+    @StateObject var loginVM: LoginViewModel = .init()
+    
+    var body: some View {
+        NavigationView {
+            ZStack {
+                RoundedRectangle(cornerRadius: 10)
+                    .frame(width: UIScreen.main.bounds.width, height: 500)
+                    .foregroundColor(Color.green)
+                    .offset(y: -200)
+                
+                VStack {
+                    HeaderView()
+                        .offset(y: -40)
+                    
+                    Form {
+                        TextField("Email Address", text: $loginVM.email)
+                            .autocorrectionDisabled(true)
+                            .autocapitalization(.none)
+                        SecureField("Password", text: $loginVM.password)
+                            .autocorrectionDisabled(true)
+                            .autocapitalization(.none)
+                        
+                        Button(action: {
+                            // Add login action
+                        }) {
+                            Text("Log In")
+                                .bold()
+                                .frame(maxWidth: .infinity)
+                                .multilineTextAlignment(.center)
+                        }
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                    }
+                    
+                    VStack {
+                        Text("First time here?")
+                        NavigationLink("Create an account", destination: RegisterView())
+                    }
+                }
+            }
+        }
+        Spacer()
+    }
+}
+
+#Preview {
+    LoginView()
+}
