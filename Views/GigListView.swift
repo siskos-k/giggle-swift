@@ -22,7 +22,11 @@ struct GigListView: View {
             .navigationTitle("Giggle")
             .toolbar{
                 Button {
+                    viewModel.showingNewGigView = true
                 } label:{Image(systemName: "plus")}
+            }
+            .sheet(isPresented: $viewModel.showingNewGigView){
+                NewGigView()
             }
         }
         

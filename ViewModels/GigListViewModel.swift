@@ -8,5 +8,6 @@
 import Foundation
 
 class GigListViewModel: ObservableObject {
+    @Published var showingNewGigView = false
     init(){}
 }
