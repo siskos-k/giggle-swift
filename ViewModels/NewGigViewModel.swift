@@ -15,7 +15,21 @@ class NewGigViewModel: ObservableObject{
     @Published var isRemote: Bool = false
     @Published var location: String = ""
     @Published var category: String = ""
+    
+    @Published var showAlert: Bool = false
+    
     init(){}
     
     func save(){}
+    
+    var canSave: Bool {
+        guard !title.trimmingCharacters(in: .whitespaces).isEmpty else{
+            return false
+        }
+        //remove seconds of day to take timezones into account.
+        guard date >= Date().addingTimeInterval(-86400) else{
+           return false
+        }
+        return true
+    }
 }

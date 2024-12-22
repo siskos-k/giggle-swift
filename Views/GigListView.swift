@@ -26,7 +26,7 @@ struct GigListView: View {
                 } label:{Image(systemName: "plus")}
             }
             .sheet(isPresented: $viewModel.showingNewGigView){
-                NewGigView()
+                NewGigView( newGigPresented: $viewModel.showingNewGigView)
             }
         }
         

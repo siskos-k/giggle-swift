@@ -9,7 +9,9 @@ import SwiftUI
 
 struct NewGigView: View {
     
+    
     @StateObject var viewModel = NewGigViewModel()
+    @Binding var newGigPresented: Bool
     let categories = ["Hospitality", "Academic", "Art", "Social Media", "Technology", "Other"]
     
     var body: some View {
@@ -70,7 +72,14 @@ struct NewGigView: View {
                         .padding(.vertical, 8)
                     
                     Button(action: {
-                        //add uploading method
+                        if viewModel.canSave {
+                            viewModel.save()
+                            newGigPresented = false
+
+                        }
+                        else {
+                            viewModel.showAlert = true
+                        }
                     }) {
                         Text("Upload Gig")
                             .bold()
@@ -82,11 +91,17 @@ struct NewGigView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
                 }
+                .alert(isPresented: $viewModel.showAlert){
+                    Alert(title: Text("Error"), message: Text("Please fill in all the fields. The date shouldn't be in the past."))
+                }
             }
         }
     }
 }
 
 #Preview {
-    NewGigView()
+    NewGigView(newGigPresented: Binding(get: {
+        return true
+    }, set: { _ in
+    }))
 }
