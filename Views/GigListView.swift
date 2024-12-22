@@ -6,18 +6,26 @@
 //
 
 import SwiftUI
+import FirebaseFirestore
+
 
 struct GigListView: View {
     @StateObject var viewModel = GigListViewModel()
+    @FirestoreQuery var items: [Gig]
+    
     private let userId: String
     init(userId: String){
         self.userId = userId
+        self._items = FirestoreQuery(collectionPath: "users/\(userId)/gigs")
     }
 
     var body: some View {
         NavigationView{
             VStack{
-                
+                List(items) {
+                    item in GigView(item: item)
+                }
+                .listStyle(PlainListStyle())
             }
             .navigationTitle("Giggle")
             .toolbar{
@@ -35,5 +43,5 @@ struct GigListView: View {
 }
 
 #Preview {
-    GigListView(userId: "")
+    GigListView(userId: "cPoiKNpzBvOhQumkpa5Zfuqdw9W2")
 }
