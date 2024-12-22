@@ -47,6 +47,18 @@ class NewGigViewModel: ObservableObject{
         guard !title.trimmingCharacters(in: .whitespaces).isEmpty else{
             return false
         }
+        guard !description.trimmingCharacters(in: .whitespaces).isEmpty else{
+            return false
+        }
+        guard !category.trimmingCharacters(in: .whitespaces).isEmpty else{
+            return false
+        }
+        guard !location.trimmingCharacters(in: .whitespaces).isEmpty else{
+            return false
+        }
+        guard !(payment==0) else{
+            return false
+        }
         //remove seconds of day to take timezones into account.
         guard date >= Date().addingTimeInterval(-86400) else{
            return false
