@@ -6,6 +6,10 @@
 //
 
 import Foundation
+import FirebaseAuth
+import FirebaseFirestore
+
+
 
 class NewGigViewModel: ObservableObject{
     @Published var title = ""
@@ -20,7 +24,24 @@ class NewGigViewModel: ObservableObject{
     
     init(){}
     
-    func save(){}
+    func save(){
+    guard canSave else {
+        return}
+        //get userId
+        guard let uId = Auth.auth().currentUser?.uid else{
+            return
+        }
+        //create model
+        let newId = UUID().uuidString
+        let newGig = Gig(id: newId, title: title, description: description, category: category, location: location, isRemote: isRemote, payment: payment, date: date.timeIntervalSince1970, createdDate: Date().timeIntervalSince1970, isDone: false)
+        //save model
+        let db = Firestore.firestore()
+        db.collection("users")
+            .document(uId)
+            .collection("gigs")
+            .document(newId)
+            .setData(newGig.asDictionary())
+    }
     
     var canSave: Bool {
         guard !title.trimmingCharacters(in: .whitespaces).isEmpty else{
