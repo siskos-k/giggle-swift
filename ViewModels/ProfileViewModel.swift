@@ -12,7 +12,7 @@ import FirebaseAuth
 class ProfileViewModel: ObservableObject {
     init(){}
     @Published var user: User? = nil
-    func logOut(){}
+    
     func fetchUser() {
         guard let userId = Auth.auth().currentUser?.uid else{
             return
@@ -34,8 +34,17 @@ class ProfileViewModel: ObservableObject {
             }
             
         }
-            func logOut(){}
+    }
+            func logOut(){
+                do{
+                    try Auth.auth().signOut()
+                }
+                catch{
+                    print(error)
+                }
+                
+            }
             
         }
         
-    }
+    

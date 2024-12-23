@@ -42,7 +42,11 @@ struct ProfileView: View {
                         .padding()
                     }
                     
-                    Button("Log Out"){viewModel.logOut()}
+                    Button("Log Out"){
+                        viewModel.logOut()
+                    }
+                    .tint(.red)
+                    .padding()
                 }
                 else {
                     Text("Loading Profile")
