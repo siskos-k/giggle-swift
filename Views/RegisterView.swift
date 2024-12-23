@@ -21,7 +21,7 @@ struct RegisterView: View {
                 
                 VStack {
                     HeaderView()
-                        .offset(y: -70)
+                        .offset(y: -100)
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
                             .foregroundColor(Color.white)
