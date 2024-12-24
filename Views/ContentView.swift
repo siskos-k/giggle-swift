@@ -17,6 +17,10 @@ struct ContentView: View {
                 .tabItem {
                     Label("Home", systemImage: "house")
                 }
+            MyGigsView(userId: viewModel.currentUserId)
+                .tabItem {
+                    Label("My Gigs", systemImage: "calendar.and.person")
+                }
             ProfileView()
                 .tabItem {
                     Label("Profile", systemImage: "person.circle")
