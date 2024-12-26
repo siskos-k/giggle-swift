@@ -23,7 +23,7 @@ struct MyGigsView: View {
         NavigationView{
             VStack{
                 List(items) {
-                    item in GigView(item: item)
+                    item in MyGigView(item: item)
                 }
                 .listStyle(PlainListStyle())
             }
@@ -43,5 +43,5 @@ struct MyGigsView: View {
 }
 
 #Preview {
-    MyGigsView(userId: "cPoiKNpzBvOhQumkpa5Zfuqdw9W2")
+    MyGigsView(userId: "YK9NDZrChuYf0OVapLZyj2ZbkN83")
 }

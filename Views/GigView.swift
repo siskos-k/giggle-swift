@@ -56,15 +56,20 @@ struct GigView: View {
 
 #Preview {
     GigView(item: Gig(
-          id: UUID().uuidString,
-          title: "This is a gig",
-          description: "This is the description. It will take 1-2 or maybe even 3 sentences.",
-          category: "Other",
-          location: "Moon",
-          isRemote: true,
-          payment: 123,
-          date: Date().timeIntervalSince1970,
-          createdDate: Date().timeIntervalSince1970,
-          isDone: false
-      ))
+        id: UUID().uuidString,
+        title: "This is a gig",
+        description: "This is the description. It will take 1-2 or maybe even 3 sentences.",
+        category: "Other",
+        location: "Moon",
+        isRemote: true,
+        payment: 123,
+        date: Date().timeIntervalSince1970,
+        createdDate: Date().timeIntervalSince1970,
+        isDone: false,
+        applicants: [
+            User(id: UUID().uuidString, name: "Alice", email: "alice@example.com", joined: Date().timeIntervalSince1970),
+            User(id: UUID().uuidString, name: "Bob", email: "bob@example.com", joined: Date().timeIntervalSince1970)
+        ],
+        workerId: nil
+    ))
 }

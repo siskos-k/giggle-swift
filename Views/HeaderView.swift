@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HeaderView: View {
     let Title: String = "Giggle"
-    let Subtitle: String = "Find quick gigs, get paid instantly"
+    let Subtitle: String = "Find quick gigs, get paid instantly."
     
     var body: some View {
         ZStack {
