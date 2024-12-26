@@ -96,36 +96,53 @@ struct GigView: View {
             return
         }
 
-        let currentUserName = Auth.auth().currentUser?.displayName ?? "Anonymous"
-        let currentUserEmail = Auth.auth().currentUser?.email ?? "no-email@example.com"
-
-        print("User ID: \(currentUserId), Name: \(currentUserName), Email: \(currentUserEmail)")
-
-        let applicantData: [String: Any] = [
-            "id": currentUserId,
-            "name": currentUserName,
-            "email": currentUserEmail,
-            "joined": Date().timeIntervalSince1970
-        ]
-
+        // Fetch the user's name from Firestore
         let db = Firestore.firestore()
-        let gigRef = db.collection("users").document(item.employerId).collection("gigs").document(item.id)
+        let userRef = db.collection("users").document(currentUserId)
 
-        print("Firestore Path: \(gigRef.path)")
-
-        gigRef.updateData([
-            "applicants": FieldValue.arrayUnion([applicantData])
-        ]) { error in
-            isLoading = false
-
+        userRef.getDocument { document, error in
             if let error = error {
-                print("Error applying to gig: \(error.localizedDescription)")
+                print("Error fetching user data: \(error.localizedDescription)")
+                self.isLoading = false
                 return
             }
 
-            print("Successfully applied to gig.")
-            withAnimation {
-                hasApplied = true
+            guard let document = document, document.exists,
+                  let userData = document.data(),
+                  let currentUserName = userData["name"] as? String,
+                  let currentUserEmail = userData["email"] as? String else {
+                print("Error: User data is incomplete or missing.")
+                self.isLoading = false
+                return
+            }
+
+            print("User ID: \(currentUserId), Name: \(currentUserName), Email: \(currentUserEmail)")
+
+            let applicantData: [String: Any] = [
+                "id": currentUserId,
+                "name": currentUserName,
+                "email": currentUserEmail,
+                "joined": Date().timeIntervalSince1970
+            ]
+
+            let gigRef = db.collection("users").document(self.item.employerId).collection("gigs").document(self.item.id)
+
+            print("Firestore Path: \(gigRef.path)")
+
+            gigRef.updateData([
+                "applicants": FieldValue.arrayUnion([applicantData])
+            ]) { error in
+                self.isLoading = false
+
+                if let error = error {
+                    print("Error applying to gig: \(error.localizedDescription)")
+                    return
+                }
+
+                print("Successfully applied to gig.")
+                withAnimation {
+                    self.hasApplied = true
+                }
             }
         }
     }
