@@ -18,9 +18,10 @@ struct Gig: Codable, Identifiable {
     let date: TimeInterval
     let createdDate: TimeInterval
     var isDone: Bool
+    var employerId: String
     var applicants: [User] //holding applicants
     var workerId: String? //selected worker from applicants
-
+  
     mutating func setDone(_ state: Bool) {
         isDone = state
     }

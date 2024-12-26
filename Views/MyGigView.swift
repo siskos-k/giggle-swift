@@ -111,6 +111,7 @@ struct MyGigView: View {
         date: Date().timeIntervalSince1970,
         createdDate: Date().timeIntervalSince1970,
         isDone: false,
+        employerId: UUID().uuidString,
         applicants: [
 //            User(id: UUID().uuidString, name: "Alice", email: "alice@example.com", joined: Date().timeIntervalSince1970),
 //            User(id: UUID().uuidString, name: "Bob", email: "bob@example.com", joined: Date().timeIntervalSince1970)

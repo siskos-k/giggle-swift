@@ -43,6 +43,7 @@ class NewGigViewModel: ObservableObject {
             date: date.timeIntervalSince1970,
             createdDate: Date().timeIntervalSince1970,
             isDone: false,
+            employerId: uId,
             applicants: [], // Empty applicant list
             workerId: nil   // Nil workerId
         )
