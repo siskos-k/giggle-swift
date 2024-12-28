@@ -6,58 +6,53 @@
 //
 
 import SwiftUI
-
 struct MyGigView: View {
     let item: Gig
-    
+
     @State private var showApplicants: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            // Main gig details
-            HStack {
-                VStack(alignment: .leading, spacing: 8) {
-                    // Title
-                    Text(item.title)
-                        .font(.headline)
-                        .foregroundColor(.black)
-                    
-                    // Location
-                    HStack(spacing: 4) {
-                        Image(systemName: "location")
-                            .resizable()
-                            .frame(width: 14, height: 14)
-                            .foregroundColor(.blue)
-                        Text(item.isRemote ? "Remote" : item.location)
-                            .font(.subheadline)
-                            .foregroundColor(.blue)
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text(item.title)
+                            .font(.headline)
+                            .foregroundColor(.black)
+
+                        HStack(spacing: 4) {
+                            Image(systemName: "location")
+                                .resizable()
+                                .frame(width: 14, height: 14)
+                                .foregroundColor(.blue)
+                            Text(item.isRemote ? "Remote" : item.location)
+                                .font(.subheadline)
+                                .foregroundColor(.blue)
+                        }
+
+                        Text(item.description)
+                            .font(.footnote)
+                            .foregroundColor(.gray)
+                            .lineLimit(2)
+                        Text(Date(timeIntervalSince1970: item.date).formatted(date: .abbreviated, time: .omitted))
+                            .font(.footnote)
+                            .foregroundColor(.black)
                     }
-                    
-                    // Description
-                    Text(item.description)
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                        .lineLimit(2) // Adjust to show limited lines of text
-                    Text(Date(timeIntervalSince1970: item.date).formatted(date: .abbreviated, time: .omitted))
-                        .font(.footnote)
-                        .foregroundColor(.black)
+
+                    Spacer()
+
+                    Text("\(item.payment)€")
+                        .font(.title3)
+                        .foregroundColor(.green)
+                        .bold()
                 }
-                
-                Spacer()
-                
-                // Payment
-                Text("\(item.payment)€")
-                    .font(.title3)
-                    .foregroundColor(.green)
-                    .bold()
             }
             .padding()
             .background(Color.white)
             .cornerRadius(10)
             .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
 
-            // Applicant list section
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 8) {
                 if item.applicants.isEmpty {
                     Text("There are currently no applicants")
                         .font(.footnote)
@@ -77,27 +72,52 @@ struct MyGigView: View {
                                 .foregroundColor(.blue)
                         }
                     }
-                    
+
                     if showApplicants {
                         ForEach(item.applicants, id: \.id) { applicant in
-                            VStack(alignment: .leading) {
-                                Text(applicant.name)
-                                    .font(.footnote)
-                                    .foregroundColor(.black)
-                                Text(applicant.email)
-                                    .font(.footnote)
-                                    .foregroundColor(.gray)
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(applicant.name)
+                                        .font(.footnote)
+                                        .foregroundColor(.black)
+                                    Text(applicant.email)
+                                        .font(.footnote)
+                                        .foregroundColor(.gray)
+                                }
+
+                                Spacer()
+
+                                Button(action: {
+                                    acceptApplicant(applicant)
+                                }) {
+                                    Text("Accept")
+                                        .font(.subheadline)
+                                        .foregroundColor(.white)
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 6)
+                                        .background(Color.blue)
+                                        .cornerRadius(8)
+                                }
                             }
-                            .padding(.vertical, 2)
+                            .padding(.vertical, 4)
                         }
                     }
                 }
             }
-            .padding()
+
+            Divider()
+                .padding(.vertical, 8)
         }
         .padding(.horizontal)
+        .background(Color.clear)
+    }
+
+    private func acceptApplicant(_ applicant: User) {
+        print("Accepted applicant: \(applicant.name)")
     }
 }
+
+
 
 #Preview {
     MyGigView(item: Gig(
