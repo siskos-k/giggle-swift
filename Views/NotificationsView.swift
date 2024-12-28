@@ -21,7 +21,7 @@ struct NotificationsView: View {
                                             Button(role: .destructive) {
                                                 viewModel.hideNotification(id: notification.id)
                                             } label: {
-                                                Label("Hide",  systemImage: "trash")
+                                                Label("Hide", systemImage: "trash")
                                             }
                                         }
                                 }
@@ -46,6 +46,7 @@ struct NotificationsView: View {
         return grouped.sorted { $0.key > $1.key } // Sort by date (newest first)
     }
 }
+
 struct NotificationRow: View {
     let notification: NotificationItem
 
@@ -53,9 +54,8 @@ struct NotificationRow: View {
         VStack(alignment: .leading) {
             Text(notification.title)
                 .font(.headline)
-//                .foregroundColor(.black)
 
-            buildMessage(notification.message) // Properly combine bold and regular parts
+            buildMessage(notification.message)
 
             Text(notification.date.formatted(date: .abbreviated, time: .shortened))
                 .font(.footnote)
@@ -69,10 +69,8 @@ struct NotificationRow: View {
             return components.enumerated().reduce(Text("")) { result, pair in
                 let (index, part) = pair
                 if index % 2 == 1 {
-                    // Bold parts
                     return result + Text(part).bold().foregroundColor(.gray)
                 } else {
-                    // Regular parts
                     return result + Text(part).foregroundColor(.gray)
                 }
             }

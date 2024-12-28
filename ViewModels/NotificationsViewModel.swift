@@ -1,3 +1,9 @@
+//
+//  NotificationsViewModel.swift
+//  Giggle
+//
+//  Created by Konstantinos Siskos on 28/12/24.
+//
 import Foundation
 import FirebaseFirestore
 import FirebaseAuth
@@ -17,69 +23,93 @@ class NotificationsViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.notifications = []
         }
-        
-        // Fetch relevant notifications
-        fetchSelectedAsWorkerNotifications(for: currentUserId)
-        fetchNewApplicantNotifications(for: currentUserId)
+
+        // Fetch notifications
+        fetchAcceptedNotifications(for: currentUserId)
+        fetchApplicationNotifications(for: currentUserId)
     }
-
-    private func fetchSelectedAsWorkerNotifications(for userId: String) {
-        db.collection("users").document(userId).collection("gigs")
-            .whereField("workerId", isEqualTo: userId)
-            .getDocuments { gigsSnapshot, error in
-                if let error = error {
-                    print("Error fetching gigs for worker: \(error.localizedDescription)")
-                    return
-                }
-
-                guard let gigs = gigsSnapshot?.documents else {
-                    print("No gigs found for worker.")
-                    return
-                }
-
-                for gig in gigs {
-                    let data = gig.data()
-                    guard
-                        let title = data["title"] as? String,
-                        let employerEmail = data["employerEmail"] as? String,
-                        let date = data["date"] as? TimeInterval
-                    else {
-                        continue
-                    }
-
-                    let message = "You have been selected as a worker for the gig: **\(title)**! Contact the employer at \(employerEmail)."
-                    let notification = NotificationItem(
-                        id: gig.documentID,
-                        title: "You've been selected!",
-                        message: message,
-                        date: Date(timeIntervalSince1970: date),
-                        gigId: gig.documentID,
-                        employerId: userId,
-                        isHidden: false
-                    )
-
-                    DispatchQueue.main.async {
-                        self.notifications.append(notification)
-                    }
-                }
+    private func fetchAcceptedNotifications(for currentUserId: String) {
+        db.collection("users").getDocuments { snapshot, error in
+            if let error = error {
+                print("Error fetching users: \(error.localizedDescription)")
+                return
             }
+
+            guard let users = snapshot?.documents else {
+                print("No users found.")
+                return
+            }
+
+            for user in users {
+                // Query gigs where workerId matches currentUserId
+                user.reference.collection("gigs")
+                    .whereField("workerId", isEqualTo: currentUserId)
+                    .getDocuments { gigsSnapshot, error in
+                        if let error = error {
+                            print("Error fetching gigs for user: \(user.documentID): \(error.localizedDescription)")
+                            return
+                        }
+
+                        guard let gigs = gigsSnapshot?.documents, !gigs.isEmpty else {
+                            print("No gigs found for worker \(currentUserId) in user \(user.documentID).")
+                            return
+                        }
+
+                        for gig in gigs {
+                            let data = gig.data()
+
+                            // Safely parse gig fields
+                            guard
+                                let title = data["title"] as? String,
+                                let date = data["date"] as? TimeInterval,
+                                let employerId = data["employerId"] as? String,
+                                let employerEmail = user.data()["email"] as? String // Use user's email as fallback
+                            else {
+                                print("Missing required fields in gig \(gig.documentID). Data: \(data)")
+                                continue
+                            }
+
+                            let message = "You have been selected as a worker for the gig: **\(title)**! Contact the employer at \(employerEmail)."
+                            let notification = NotificationItem(
+                                id: gig.documentID,
+                                title: "Accepted for Gig",
+                                message: message,
+                                date: Date(timeIntervalSince1970: date),
+                                gigId: gig.documentID,
+                                employerId: employerId,
+                                isHidden: false
+                            )
+
+                            // Append notification on the main thread
+                            DispatchQueue.main.async {
+                                self.notifications.append(notification)
+                                print("Notification added for accepted gig: \(notification)")
+                            }
+                        }
+                    }
+            }
+        }
     }
 
-    private func fetchNewApplicantNotifications(for userId: String) {
-        db.collection("users").document(userId).collection("gigs")
-            .getDocuments { gigsSnapshot, error in
+    private func fetchApplicationNotifications(for currentUserId: String) {
+        db.collection("users")
+            .document(currentUserId)
+            .collection("gigs")
+            .getDocuments { snapshot, error in
                 if let error = error {
-                    print("Error fetching gigs for employer: \(error.localizedDescription)")
+                    print("Error fetching gigs for current user: \(error.localizedDescription)")
                     return
                 }
 
-                guard let gigs = gigsSnapshot?.documents else {
-                    print("No gigs found for employer.")
+                guard let gigs = snapshot?.documents else {
+                    print("No gigs found for current user.")
                     return
                 }
 
                 for gig in gigs {
                     let data = gig.data()
+
+                    // Safely parse gig fields
                     guard
                         let title = data["title"] as? String,
                         let applicants = data["applicants"] as? [[String: Any]],
@@ -93,17 +123,18 @@ class NotificationsViewModel: ObservableObject {
                             continue
                         }
 
-                        let message = "**\(applicantName)** has applied to your gig: **\(title)**. Go to 'My Gigs' to view their application."
+                        let message = "**\(applicantName)** has applied to your gig: **\(title)**."
                         let notification = NotificationItem(
                             id: UUID().uuidString,
-                            title: "New Applicant - \(title)",
+                            title: "New Application - \(title)",
                             message: message,
                             date: Date(timeIntervalSince1970: date),
                             gigId: gig.documentID,
-                            employerId: userId,
+                            employerId: currentUserId,
                             isHidden: false
                         )
 
+                        // Append notification on the main thread
                         DispatchQueue.main.async {
                             self.notifications.append(notification)
                         }
