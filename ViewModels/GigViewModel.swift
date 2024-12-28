@@ -30,3 +30,4 @@ class GigViewModel: ObservableObject {
         hasApplied = gig.applicants.contains { $0.id == userId }
     }
 }
+
