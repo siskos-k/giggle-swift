@@ -21,11 +21,16 @@ struct ContentView: View {
                 .tabItem {
                     Label("My Gigs", systemImage: "calendar.and.person")
                 }
+            NotificationsView()
+                .tabItem {
+                    Label("Notifications", systemImage: "bell")
+                }
             ProfileView()
                 .tabItem {
                     Label("Profile", systemImage: "person.circle")
                 }
             }
+            
         }
         else{
             LoginView()
