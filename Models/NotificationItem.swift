@@ -14,4 +14,5 @@ struct NotificationItem: Identifiable {
     let date: Date
     let gigId: String
     let employerId: String
+    var isHidden: Bool = false
 }

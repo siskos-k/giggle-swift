@@ -19,12 +19,12 @@ class NotificationsViewModel: ObservableObject {
             return
         }
         
-        //Reset notifications
+        // Reset notifications
         DispatchQueue.main.async {
             self.notifications = []
         }
         
-        //Fetch notifications
+        // Fetch notifications
         fetchSelectedAsWorkerNotifications(for: currentUserId)
         fetchNewApplicantNotificationsAcrossUsers(for: currentUserId)
     }
@@ -42,6 +42,11 @@ class NotificationsViewModel: ObservableObject {
             }
 
             for user in users {
+                guard let ownerEmail = user.data()["email"] as? String else {
+                    print("Missing email for user: \(user.documentID)")
+                    continue
+                }
+
                 user.reference.collection("gigs").getDocuments { gigsSnapshot, error in
                     if let error = error {
                         print("Error fetching gigs for user: \(user.documentID): \(error.localizedDescription)")
@@ -56,7 +61,7 @@ class NotificationsViewModel: ObservableObject {
                     for gig in gigs {
                         let data = gig.data()
 
-              
+                        // Safely parse gig fields
                         guard
                             let title = data["title"] as? String,
                             let employerId = data["employerId"] as? String,
@@ -67,14 +72,15 @@ class NotificationsViewModel: ObservableObject {
                             continue
                         }
 
-                        let message = "You have been selected as a worker for the gig: \(title)"
+                        let message = "You have been selected as a worker for the gig: **\(title)**! Contact the employer at \(ownerEmail)."
                         let notification = NotificationItem(
                             id: gig.documentID,
-                            title: "Selected for a Gig",
+                            title: "You've been selected!",
                             message: message,
                             date: Date(timeIntervalSince1970: date),
                             gigId: gig.documentID,
-                            employerId: employerId
+                            employerId: employerId,
+                            isHidden: false // Add hidden property
                         )
 
                         // Append notification on the main thread
@@ -128,14 +134,15 @@ class NotificationsViewModel: ObservableObject {
                                 continue
                             }
 
-                            let message = "\(applicantName) has applied to your gig: \(title)"
+                            let message = "**\(applicantName)** has applied to your gig: **\(title)**. Go to 'My Gigs' to view their application."
                             let notification = NotificationItem(
                                 id: UUID().uuidString, // Generate a unique ID for this notification
-                                title: "New Applicant",
+                                title: "New Applicant - \(title)", // Updated headline
                                 message: message,
                                 date: Date(timeIntervalSince1970: date),
                                 gigId: gig.documentID,
-                                employerId: user.documentID
+                                employerId: user.documentID,
+                                isHidden: false // Add hidden property
                             )
 
                             // Append notification on the main thread
@@ -145,6 +152,14 @@ class NotificationsViewModel: ObservableObject {
                         }
                     }
                 }
+            }
+        }
+    }
+
+    func hideNotification(id: String) {
+        DispatchQueue.main.async {
+            if let index = self.notifications.firstIndex(where: { $0.id == id }) {
+                self.notifications[index].isHidden = true
             }
         }
     }
