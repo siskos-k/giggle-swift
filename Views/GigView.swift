@@ -7,7 +7,6 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
-
 struct GigView: View {
     let item: Gig
     @State private var hasApplied: Bool = false
@@ -76,12 +75,7 @@ struct GigView: View {
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         .onAppear {
-            if Auth.auth().currentUser == nil {
-                print("No authenticated user.")
-                // Handle unauthenticated user (e.g., redirect to login)
-            } else {
-                checkIfApplied()
-            }
+            checkIfApplied()
         }
     }
 
@@ -116,8 +110,6 @@ struct GigView: View {
                 return
             }
 
-            print("User ID: \(currentUserId), Name: \(currentUserName), Email: \(currentUserEmail)")
-
             let applicantData: [String: Any] = [
                 "id": currentUserId,
                 "name": currentUserName,
@@ -126,8 +118,6 @@ struct GigView: View {
             ]
 
             let gigRef = db.collection("users").document(self.item.employerId).collection("gigs").document(self.item.id)
-
-            print("Firestore Path: \(gigRef.path)")
 
             gigRef.updateData([
                 "applicants": FieldValue.arrayUnion([applicantData])
@@ -149,6 +139,26 @@ struct GigView: View {
 
     private func checkIfApplied() {
         guard let currentUserId = Auth.auth().currentUser?.uid else { return }
-        hasApplied = item.applicants.contains { $0.id == currentUserId }
+
+        //check for real time reload
+        let db = Firestore.firestore()
+        let gigRef = db.collection("users").document(item.employerId).collection("gigs").document(item.id)
+
+        gigRef.getDocument { document, error in
+            if let error = error {
+                print("Error fetching gig data: \(error.localizedDescription)")
+                return
+            }
+
+            guard let document = document, let data = document.data(),
+                  let applicants = data["applicants"] as? [[String: Any]] else {
+                print("Error: Gig data or applicants are missing.")
+                return
+            }
+
+            hasApplied = applicants.contains { applicant in
+                (applicant["id"] as? String) == currentUserId
+            }
+        }
     }
 }
