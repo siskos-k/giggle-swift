@@ -11,7 +11,8 @@ import FirebaseFirestore
 struct GigListView: View {
     @StateObject var viewModel = GigListViewModel()
     @State private var gigs: [Gig] = []
-    
+    @State private var isLoading: Bool = true
+
     private let userId: String
     init(userId: String) {
         self.userId = userId
@@ -20,7 +21,11 @@ struct GigListView: View {
     var body: some View {
         NavigationView {
             VStack {
-                if gigs.isEmpty {
+                if isLoading {
+                    Text("Gigs Loading...")
+                        .foregroundColor(.gray)
+                        .padding()
+                } else if gigs.isEmpty {
                     Text("No gigs available.")
                         .foregroundColor(.gray)
                         .padding()
@@ -32,13 +37,6 @@ struct GigListView: View {
                 }
             }
             .navigationTitle("Giggle")
-            .toolbar {
-                Button {
-                    viewModel.showingNewGigView = true
-                } label: {
-                    Image(systemName: "plus")
-                }
-            }
             .sheet(isPresented: $viewModel.showingNewGigView) {
                 NewGigView(newGigPresented: $viewModel.showingNewGigView)
             }
@@ -47,11 +45,13 @@ struct GigListView: View {
     }
     
     private func fetchGigs() {
+        isLoading = true
         let db = Firestore.firestore()
         db.collection("users")
             .getDocuments { snapshot, error in
                 if let error = error {
                     print("Error fetching user IDs: \(error.localizedDescription)")
+                    isLoading = false
                     return
                 }
                 
@@ -79,6 +79,7 @@ struct GigListView: View {
                 
                 group.notify(queue: .main) {
                     self.gigs = allGigs
+                    self.isLoading = false
                 }
             }
     }

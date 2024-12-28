@@ -21,18 +21,36 @@ struct MyGigsView: View {
 
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(items) { item in
-                        MyGigView(item: item)
-                            .padding(.horizontal)
-                            .padding(.top, 8)
-                            .background(Color.white.opacity(0))
-                            .cornerRadius(10)
-                            .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+            ZStack {
+                if items.isEmpty {
+                    VStack(spacing: 16) {
+                        Text("You currently have no gigs.")
+                            .foregroundColor(.gray)
+                            .multilineTextAlignment(.center)
+                            .padding()
+
+                        Text("Tap the blue arrow on the top-right to add a gig.")
+                            .foregroundColor(.blue)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .multilineTextAlignment(.center)
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(items) { item in
+                                MyGigView(item: item)
+                                    .padding(.horizontal)
+                                    .padding(.top, 8)
+                                    .background(Color.white.opacity(0))
+                                    .cornerRadius(10)
+                                    .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
+                            }
+                        }
+                        .padding(.top, 16)
                     }
                 }
-                .padding(.top, 16)
             }
             .background(Color(UIColor.systemGroupedBackground)) // Optional background
             .navigationTitle("My Gigs")
@@ -49,8 +67,6 @@ struct MyGigsView: View {
         }
     }
 }
-
-
 
 #Preview {
     MyGigsView(userId: "YK9NDZrChuYf0OVapLZyj2ZbkN83")

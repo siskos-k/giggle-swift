@@ -1,3 +1,4 @@
+
 //
 //  LoginView.swift
 //  Giggle
@@ -8,9 +9,8 @@
 import SwiftUI
 
 struct LoginView: View {
-    
     @StateObject var loginVM: LoginViewModel = .init()
-    
+
     var body: some View {
         NavigationView {
             ZStack {
@@ -18,25 +18,26 @@ struct LoginView: View {
                     .frame(width: UIScreen.main.bounds.width, height: 500)
                     .foregroundColor(Color.green)
                     .offset(y: -200)
-                
+
                 VStack {
                     HeaderView()
                         .offset(y: -40)
-                    
-                    
-                  
+
                     Form {
                         if !loginVM.errormessage.isEmpty {
                             Text(loginVM.errormessage)
                                 .foregroundColor(Color.red)
+                                .multilineTextAlignment(.center)
                         }
+
                         TextField("Email Address", text: $loginVM.email)
                             .autocorrectionDisabled(true)
                             .autocapitalization(.none)
+
                         SecureField("Password", text: $loginVM.password)
                             .autocorrectionDisabled(true)
                             .autocapitalization(.none)
-                        
+
                         Button(action: {
                             loginVM.login()
                         }) {
@@ -50,7 +51,7 @@ struct LoginView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                     }
-                    
+
                     VStack {
                         Text("First time here?")
                         NavigationLink("Create an account", destination: RegisterView())
