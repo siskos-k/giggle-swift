@@ -10,18 +10,36 @@ struct RegisterView: View {
                 RoundedRectangle(cornerRadius: 10)
                     .frame(width: UIScreen.main.bounds.width, height: 500)
                     .foregroundColor(Color.green)
-                    .offset(y: -200)
+//                    .offset(y: -100)
                 
                 VStack {
                     HeaderView()
                         .offset(y: -100)
                     ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .foregroundColor(Color.white)
-                            .frame(width: UIScreen.main.bounds.width - 10, height: 55)
-                        Text("Welcome! Fill in the form to start turning your passion into an income!")
-                            .foregroundColor(Color.black)
-                    }
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            Divider()
+                            Text("Welcome!")
+                                .font(.title)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.black)
+                            Divider()
+                            
+                            Text("We're excited to have you here. Take the first step towards transforming your passion into a rewarding journey.")
+                                .font(.body)
+                                .foregroundColor(.black)
+                            Divider()
+
+                            Text("Fill in the form below and let's get started on building your dreams into reality!")
+                                .font(.body)
+                                .foregroundColor(.black)
+                            Divider()
+
+                        }
+                        }
+                    .padding(.horizontal, 20)
+                    .offset(y: -100)
+
                     Form {
                         if !registerVM.errorMessage.isEmpty {
                             Text(registerVM.errorMessage)
@@ -51,9 +69,14 @@ struct RegisterView: View {
                         .foregroundColor(.white)
                         .cornerRadius(8)
                     }
+                    .offset(y: -100)
+
                 }
             }
         }
         Spacer()
     }
+}
+#Preview {
+    RegisterView()
 }
